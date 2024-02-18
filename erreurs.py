@@ -6,4 +6,4 @@ class optionError(Exception):
         self.message += message
 
     def __str__(self) -> str:
-        return super().__str__()
+        return self.message

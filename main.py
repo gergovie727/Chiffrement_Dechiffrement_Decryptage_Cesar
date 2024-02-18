@@ -19,8 +19,9 @@ def show_help():
     print("\t-D, --decryptage\t\t Permet de décrypter le texte.")
     print("\t-o, --output\t\t Permet de spécifier le fichier où le texte chiffré sera stocké.")
 
-def debut() -> tuple:
+    exit(0)
 
+def debut() -> tuple:
     if len(sys.argv) == 1:
         show_help()
 
@@ -31,56 +32,69 @@ def debut() -> tuple:
     decryptage = False
 
     i = 1
-    while i < len(sys.argv):
-            
-        match sys.argv[i]:
-                
-            case "-h":
-                show_help()
-                break
-                
-            case "-v":
-                print(version)
-                break
+    try:
+        while i < len(sys.argv):
 
-            case "-f":
+            print(sys.argv[i])
+                    
+            if sys.argv[i] == "-h":
+                show_help()
+                    
+            elif sys.argv[i] == "-v":
+                print(version)
+                exit(0)
+
+            elif sys.argv[i] == "-f":
                 i+=1
                 fichier = open(sys.argv[i],"r")
                 texte = fichier.read()
-                break
 
-            case "-t":
+            elif sys.argv[i] == "-t":
                 i+=1
                 texte = sys.argv[i]
-                break
 
-            case "-c":
+            elif sys.argv[i] == "-c":
                 chiffrement = True
-                break
 
-            case "-d":
+            elif sys.argv[i] == "-d":
                 dechiffrement = True
-                break
 
-            case "-D":
+            elif sys.argv[i] == "-D":
                 decryptage = True
-                break
 
-            case "-o":
+            elif sys.argv[i] == "-o":
                 i+=1
                 fichier_sortie = open(sys.argv[i],"r")
-                break
 
-            case _:
+            else:
                 raise optionError("Vous avez donné une option invalide: ",sys.argv[i])
+                
+            i+=1
 
 
-    if (chiffrement and dechiffrement):
-        raise optionError("Vous avez donné deux options incompatibles: -c et -d.")
+        if (chiffrement and dechiffrement):
+            raise optionError("Vous avez donné deux options incompatibles: -c et -d.")
 
-    elif (chiffrement and decryptage):
-        raise optionError("Vous avez donné deux options incompatibles: -c et -D.")
+        elif (chiffrement and decryptage):
+            raise optionError("Vous avez donné deux options incompatibles: -c et -D.")
+            
+        elif (dechiffrement and decryptage):
+            raise optionError("Vous avez donné deux options incompatibles: -d et -D.")
         
-    elif (dechiffrement and decryptage):
-        raise optionError("Vous avez donné deux options incompatibles: -d et -D.")
+        elif not chiffrement and not dechiffrement and not decryptage:
+            raise optionError("Vous n'avez pas donné d'option. Veuillez en donner une (-c, -d ou -D)")
+
+    except Exception as e:
+        if type(e) == optionError:
+            print(e)
+            exit(1)
+
+    return (texte, fichier_sortie, chiffrement, dechiffrement, decryptage)
         
+texte, fichier_sortie, chiffrement, dechiffrement, decryptage = debut()
+
+if chiffrement:
+    chiffrement_cesar.chiffrement(texte)
+
+else:
+    print("wtf")

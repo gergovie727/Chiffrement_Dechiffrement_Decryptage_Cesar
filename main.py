@@ -2,9 +2,9 @@ import chiffrement_cesar
 import sys
 from erreurs import *
 
-version = "0.0.1"
+version = "0.2"
 
-def show_help():
+def show_help() -> None:
     print("Usage: cesarpy [OPTIONS]\n")
 
     print("Description:\n\tScript pour chiffrer un message en clair et déchiffrer ou décrypter un message chiffré par le code de César.\n")
@@ -68,7 +68,6 @@ def debut() -> tuple:
                 i+=1
                 try:
                     clef = sys.argv[i]
-                    print("clef: ",clef)
                     clef = int(clef)
                     if clef<0 or clef>25:
                         raise optionError("La clef donnée n'est pas bonne. Celle-ci doit être comprise entre 0 et 25.")
@@ -86,7 +85,6 @@ def debut() -> tuple:
                 i+=1
                 try:
                     clef = sys.argv[i]
-                    print("clef: ",clef)
                     clef = int(clef)
                     if clef<0 or clef>25:
                         raise optionError("La clef donnée n'est pas bonne. Celle-ci doit être comprise entre 0 et 25.")
@@ -158,7 +156,7 @@ def debut() -> tuple:
 texte, fichier_sortie, chiffrement, dechiffrement, decryptage, clef, ponct = debut()
 
 if chiffrement:
-    texte = chiffrement_cesar.chiffrement(texte, clef, ponct)
+    texte = chiffrement_cesar.chiffrement_texte(texte, clef, ponct)
     if fichier_sortie != None:
         fichier_sortie.write(texte)
         fichier_sortie.close()

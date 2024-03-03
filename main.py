@@ -18,6 +18,7 @@ def show_help():
     print("\t-d, --dechiffrement\t\t Permet de déchiffrer le texte.")
     print("\t-D, --decryptage\t\t Permet de décrypter le texte.")
     print("\t-o, --output\t\t Permet de spécifier le fichier où le texte chiffré sera stocké.")
+    print("\t-p, --ponctuation\t\t Permet de déterminer si la ponctuation doit être gardé (Vaut True par défaut).")
 
     exit(0)
 
@@ -30,12 +31,12 @@ def debut() -> tuple:
     chiffrement = False
     dechiffrement = False
     decryptage = False
+    clef = -1
+    ponct = True
 
     i = 1
     try:
         while i < len(sys.argv):
-
-            print(sys.argv[i])
                     
             if sys.argv[i] == "-h":
                 show_help()
@@ -55,9 +56,39 @@ def debut() -> tuple:
 
             elif sys.argv[i] == "-c":
                 chiffrement = True
+                i+=1
+                try:
+                    clef = sys.argv[i]
+                    print("clef: ",clef)
+                    clef = int(clef)
+                    if clef<0 or clef>25:
+                        raise optionError("La clef donnée n'est pas bonne. Celle-ci doit être comprise entre 0 et 25.")
+                    
+                except ValueError as e:
+                    print("Erreur, la clef donnée doit être un nombre compris entre 0 et 25, et non", sys.argv[i])
+                    exit(2)
+
+                except IndexError as e:
+                    print("Erreur, vous n'avez pas donné de clef de chiffrement.")
+                    exit(3)
 
             elif sys.argv[i] == "-d":
                 dechiffrement = True
+                i+=1
+                try:
+                    clef = sys.argv[i]
+                    print("clef: ",clef)
+                    clef = int(clef)
+                    if clef<0 or clef>25:
+                        raise optionError("La clef donnée n'est pas bonne. Celle-ci doit être comprise entre 0 et 25.")
+                    
+                except ValueError as e:
+                    print("Erreur, la clef donnée doit être un nombre compris entre 0 et 25, et non", sys.argv[i])
+                    exit(2)
+
+                except IndexError as e:
+                    print("Erreur, vous n'avez pas donné de clef de déchiffrement.")
+                    exit(3)
 
             elif sys.argv[i] == "-D":
                 decryptage = True
@@ -65,6 +96,23 @@ def debut() -> tuple:
             elif sys.argv[i] == "-o":
                 i+=1
                 fichier_sortie = open(sys.argv[i],"r")
+
+            elif sys.argv[i] == "-p":
+                i+=1
+                try:
+                    if sys.argv[i].lower() not in ("true","false"):
+                        raise ValueError("Error")
+                    if sys.argv[i].lower() == "true":
+                        ponct = True
+                    else:
+                        ponct = False
+                except ValueError as e:
+                    print("Erreur, la valeur de l'option -p doit être true ou false, et non", sys.argv[i])
+                    exit(4)
+
+                except IndexError as e:
+                    print("Erreur, vous n'avez pas donné de valeur pour l'option -p.")
+                    exit(5)
 
             else:
                 raise optionError("Vous avez donné une option invalide: ",sys.argv[i])
@@ -88,13 +136,12 @@ def debut() -> tuple:
         if type(e) == optionError:
             print(e)
             exit(1)
-
-    return (texte, fichier_sortie, chiffrement, dechiffrement, decryptage)
+    return (texte, fichier_sortie, chiffrement, dechiffrement, decryptage, clef, ponct)
         
-texte, fichier_sortie, chiffrement, dechiffrement, decryptage = debut()
+texte, fichier_sortie, chiffrement, dechiffrement, decryptage, clef, ponct = debut()
 
 if chiffrement:
-    chiffrement_cesar.chiffrement(texte)
+    chiffrement_cesar.chiffrement(texte, clef, ponct)
 
 else:
     print("wtf")

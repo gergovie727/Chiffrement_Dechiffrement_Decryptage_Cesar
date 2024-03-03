@@ -27,9 +27,10 @@ def chiffrement(texte, clef, ponct) -> str:
 
         elif ponct:
             nlettre = lettre
+        
         else:
             continue
 
         texte_chiffre = texte_chiffre + nlettre
 
-    print(texte_chiffre)
+    return texte_chiffre

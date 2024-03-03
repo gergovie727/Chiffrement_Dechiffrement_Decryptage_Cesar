@@ -13,7 +13,7 @@ def show_help():
     print("\t-h, --help\t\t Affiche l'aide.")
     print("\t-v, --version\t\t Affiche la version du script.")
     print("\t-f, --file\t\t Permet de spécifier le chemin du fichier dans lequel est contenu le texte.")
-    print("\t-t, --texte\t\t Permet de spécifier le texte directement en ligne de commande.")
+    print("\t-t, --text\t\t Permet de spécifier le texte directement en ligne de commande.")
     print("\t-c, --chiffrement\t\t Permet de chiffrer le texte.")
     print("\t-d, --dechiffrement\t\t Permet de déchiffrer le texte.")
     print("\t-D, --decryptage\t\t Permet de décrypter le texte.")
@@ -38,23 +38,32 @@ def debut() -> tuple:
     try:
         while i < len(sys.argv):
                     
-            if sys.argv[i] == "-h":
+            if sys.argv[i] in ("-h", "--help"):
                 show_help()
                     
-            elif sys.argv[i] == "-v":
+            elif sys.argv[i] in ("-v", "--version"):
                 print(version)
                 exit(0)
 
-            elif sys.argv[i] == "-f":
+            elif sys.argv[i] in ("-f", "--file"):
                 i+=1
-                fichier = open(sys.argv[i],"r")
-                texte = fichier.read()
+                try:
+                    fichier = open(sys.argv[i],"r")
+                    texte = fichier.read()
+                    fichier.close()
 
-            elif sys.argv[i] == "-t":
+                except FileNotFoundError as e:
+                    print(f"Erreur, le fichier d'entrée {sys.argv[i]} n'existe pas.")
+
+                except IndexError as e:
+                    print("Erreur, vous n'avez pas fourni de fichier.")
+                
+
+            elif sys.argv[i] in ("-t", "--text"):
                 i+=1
                 texte = sys.argv[i]
 
-            elif sys.argv[i] == "-c":
+            elif sys.argv[i] in ("-c", "--chiffrement"):
                 chiffrement = True
                 i+=1
                 try:
@@ -72,7 +81,7 @@ def debut() -> tuple:
                     print("Erreur, vous n'avez pas donné de clef de chiffrement.")
                     exit(3)
 
-            elif sys.argv[i] == "-d":
+            elif sys.argv[i] in ("-d", "--dechiffrement"):
                 dechiffrement = True
                 i+=1
                 try:
@@ -90,14 +99,22 @@ def debut() -> tuple:
                     print("Erreur, vous n'avez pas donné de clef de déchiffrement.")
                     exit(3)
 
-            elif sys.argv[i] == "-D":
+            elif sys.argv[i] in ("-D", "--decryptage"):
                 decryptage = True
 
-            elif sys.argv[i] == "-o":
+            elif sys.argv[i] in ("-o", "--output"):
                 i+=1
-                fichier_sortie = open(sys.argv[i],"r")
+                try:
+                    if sys.argv[i][0] == '-':
+                        raise IndexError("erreur")
+                    
+                    fichier_sortie = open(sys.argv[i],"w")
 
-            elif sys.argv[i] == "-p":
+                except IndexError as e:
+                    print(f"Erreur, vous n'avez pas donné de fichier de sortie après l'option {sys.argv[i-1]}.")
+                    exit(6)
+
+            elif sys.argv[i] in ("-p", "--ponctuation"):
                 i+=1
                 try:
                     if sys.argv[i].lower() not in ("true","false"):
@@ -121,16 +138,16 @@ def debut() -> tuple:
 
 
         if (chiffrement and dechiffrement):
-            raise optionError("Vous avez donné deux options incompatibles: -c et -d.")
+            raise optionError("Vous avez donné deux options incompatibles: -c/--chiffrement et -d/--dechiffrement.")
 
         elif (chiffrement and decryptage):
-            raise optionError("Vous avez donné deux options incompatibles: -c et -D.")
+            raise optionError("Vous avez donné deux options incompatibles: -c/chiffrement et -D/--decryptage.")
             
         elif (dechiffrement and decryptage):
-            raise optionError("Vous avez donné deux options incompatibles: -d et -D.")
+            raise optionError("Vous avez donné deux options incompatibles: -d/--dechiffrement et -D/--decryptage.")
         
         elif not chiffrement and not dechiffrement and not decryptage:
-            raise optionError("Vous n'avez pas donné d'option. Veuillez en donner une (-c, -d ou -D)")
+            raise optionError("Vous n'avez pas donné d'option. Veuillez en donner une (-c/--chiffrement, -d/--dechiffrement ou -D/--decryptage)")
 
     except Exception as e:
         if type(e) == optionError:
@@ -141,7 +158,12 @@ def debut() -> tuple:
 texte, fichier_sortie, chiffrement, dechiffrement, decryptage, clef, ponct = debut()
 
 if chiffrement:
-    chiffrement_cesar.chiffrement(texte, clef, ponct)
+    texte = chiffrement_cesar.chiffrement(texte, clef, ponct)
+    if fichier_sortie != None:
+        fichier_sortie.write(texte)
+        fichier_sortie.close()
+    else:
+        print(texte)
 
 else:
     print("wtf")

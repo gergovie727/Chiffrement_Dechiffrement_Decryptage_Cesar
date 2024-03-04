@@ -163,5 +163,13 @@ if chiffrement:
     else:
         print(texte)
 
+elif dechiffrement:
+    texte = chiffrement_cesar.chiffrement_texte(texte, 26-clef, ponct)
+    if fichier_sortie != None:
+        fichier_sortie.write(texte)
+        fichier_sortie.close()
+    else:
+        print(texte)
+
 else:
     print("wtf")

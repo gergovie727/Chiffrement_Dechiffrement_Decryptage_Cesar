@@ -13,7 +13,6 @@ def chiffrement_texte(texte: str, clef: int, ponct: bool) -> str:
     return texte_chiffre
 
 def chiffrement_lettre(lettre: str, ponct: bool, clef: int):
-    numlettre = ord(lettre)
 
     if lettre in ('à', 'â', 'ä'):
         lettre = 'a'
@@ -25,6 +24,8 @@ def chiffrement_lettre(lettre: str, ponct: bool, clef: int):
         lettre == 'u'
     elif lettre in ('o', 'ô', 'ö'):
         lettre == 'o'
+
+    numlettre = ord(lettre)
         
     if numlettre >= 65 and numlettre <= 90:
             
